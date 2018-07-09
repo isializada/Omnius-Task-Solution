@@ -93,19 +93,21 @@ public class LeftMostUOMExtractor implements QtyUomExtractor {
     }
 
     private String calculateQtyByGivenArticleByUOMIndex(String article, Integer indexOfElementOfArrayArticle){
+
         Stack<String> stringStack = new Stack<String>();
         String[] articleElements = article.split(" ");
 
+        String seperator = "";
         for(int i=indexOfElementOfArrayArticle-1; i >= 0; i--){
-            if(articleElements[i].contains(",") && articleElements[i].length() > 1){
-                if(isValidTextForQty(articleElements[i], ",")){
-                    stringStack.add(articleElements[i]);
-                }else{
-                    break;
-                }
 
-            } else if(articleElements[i].contains(".") && articleElements[i].length() > 1){
-                if(isValidTextForQty(articleElements[i], ".")){
+            if(articleElements[i].contains(".") && seperator.equals("")){
+                seperator = ".";
+            }else if(articleElements[i].contains(",") && seperator.equals("")){
+                seperator = ",";
+            }
+
+            if(!seperator.equals("") && articleElements[i].contains(seperator) && articleElements[i].length() > 1){
+                if(isValidTextForQty(articleElements[i], seperator)){
                     stringStack.add(articleElements[i]);
                 }else{
                     break;
@@ -114,7 +116,7 @@ public class LeftMostUOMExtractor implements QtyUomExtractor {
                 if(articleElements[i].equals(".") || articleElements[i].equals(",")){
                     continue;
                 } else if(IsValidTextForConvert(articleElements[i])){
-                    if(articleElements[i+1].equals(".") || articleElements[i+1].equals(",")){
+                    if(articleElements[i+1].equals(seperator) && !seperator.equals("")){
                         stringStack.add(articleElements[i+1]);
                     }
                     stringStack.add(articleElements[i]);
